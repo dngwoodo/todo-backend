@@ -20,7 +20,7 @@ app.get('/todos', (req, res) => {
 }) // 읽기
 
 app.post('/todo', (req, res) => {
-  const { title } = req.body;
+  const { newTodo: { title } } = req.body;
   const newTodo = { id: uuidv4(), title, completed: false }
 
   todos = [...todos, newTodo]
@@ -32,9 +32,31 @@ app.post('/todo', (req, res) => {
   })
 }) // 추가
 
-app.delete('todo', (req, res) => {}) // 삭제
+app.delete('/todo', (req, res) => {
+  const { id } = req.body;
+  const deletedTodo = todos.find((todo) => todo.id === id);
 
-app.patch('todo', () => {}) // 수정
+  todos = todos.filter(todo => todo.id !== id);
+
+  res.status(200).json({
+    status: 'ok',
+    message: '',
+    data: deletedTodo,
+  })
+}) // 삭제
+
+app.patch('/todo', (req, res) => {
+  const { id } = req.body;
+  const completedTodo = todos.find(todo => todo.id === id)
+
+  completedTodo.completed = true;
+
+  res.status(200).json({
+    status: 'ok',
+    message: '',
+    data: completedTodo,
+  })
+}) // 수정
 
 app.listen(PORT, () => {
   console.log('내가 서버다.');
